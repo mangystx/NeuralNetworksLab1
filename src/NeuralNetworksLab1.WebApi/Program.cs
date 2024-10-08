@@ -1,3 +1,6 @@
+using NeuralNetworksLab1.Contracts;
+using NeuralNetworksLab1.WebApi;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -13,15 +16,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("perceptron/train", (TrainingData data) =>
+app.MapPost("perceptron/train", (TrainingPoint[] data, double learningRate) =>
 {
-	var perceptron = PerceptronService.Instance;
-	perceptron.SetLearningRate(data.LearningRate);
+	var perceptron = Perceptron.Instance();
+	perceptron.LearningRate = learningRate;
 
-	for (var i = 0; i < data.X.length; i++)
+	foreach (var p in data)
 	{
-		double[] inputs = [data.X[i], data.Y[i]];
-		perceptron.Train(inputs, data.Lables[i]);
+		perceptron.Train(p);
 	}
 	
 	return Results.Ok("Training complete");
@@ -29,10 +31,10 @@ app.MapPost("perceptron/train", (TrainingData data) =>
 .WithName("TrainPerceptron")
 .WithOpenApi();
 
-app.MapPost("perceptron/predict", (double[] coordinates) =>
+app.MapPost("perceptron/predict", (Point point) =>
 {
-	var perceptron = PerceptronService.Instance;
-	int prediction = perceptron.Predict(coordinates);
+	var perceptron = Perceptron.Instance();
+	var prediction = perceptron.Predict(point);
 	
 	return Results.Ok(new { Prediction = prediction });
 })
