@@ -23,7 +23,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -44,19 +43,22 @@ app.MapPost("perceptron/train", (Perceptron perceptron, TrainingPoint[] data, do
     perceptron.InitializeWeights();
     perceptron.LearningRate = learningRate;
 
-    foreach (var p in data)
+    var isSeparable = perceptron.CheckLinearSeparability(data);
+
+    if (!isSeparable)
     {
-        perceptron.Train(p);
+        return Results.BadRequest(new { Message = "Не можливо лінійно розділити точки", Slope = (double?)null, Intercept = (double?)null });
     }
+
+    perceptron.TrainMultiple(data, 5000);
 
     if (perceptron.Weights[1] == 0)
         return Results.Problem("Не вдалося обчислити нахил та перетин, оскільки Weights[1] дорівнює нулю.");
-    
+
     var slope = -perceptron.Weights[0] / perceptron.Weights[1];
     var intercept = -perceptron.Bias / perceptron.Weights[1];
-    
-    return Results.Ok(new { Message = "Training complete", Slope = slope, Intercept = intercept });
 
+    return Results.Ok(new { Message = "Training complete", Slope = slope, Intercept = intercept });
 })
 .WithName("TrainPerceptron")
 .WithOpenApi();
