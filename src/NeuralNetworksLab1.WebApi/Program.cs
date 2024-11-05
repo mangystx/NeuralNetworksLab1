@@ -43,14 +43,10 @@ app.MapPost("perceptron/train", (Perceptron perceptron, TrainingPoint[] data, do
     perceptron.InitializeWeights();
     perceptron.LearningRate = learningRate;
 
-    var isSeparable = perceptron.CheckLinearSeparability(data);
+    var isSeparable = perceptron.TrainMultiple(data, 5000);
 
     if (!isSeparable)
-    {
         return Results.BadRequest(new { Message = "Не можливо лінійно розділити точки", Slope = (double?)null, Intercept = (double?)null });
-    }
-
-    perceptron.TrainMultiple(data, 5000);
 
     if (perceptron.Weights[1] == 0)
         return Results.Problem("Не вдалося обчислити нахил та перетин, оскільки Weights[1] дорівнює нулю.");
