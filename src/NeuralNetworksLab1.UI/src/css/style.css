@@ -1,0 +1,138 @@
+body {
+    padding: 100px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 120px;
+}
+
+.controls {
+    margin-bottom: 20px;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 250px;
+}
+
+.step-options {
+    display: flex;
+    flex-direction: column;
+}
+
+.step-options__element {
+    margin: 10px 0;
+}
+
+.interval-input {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.points-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.points-table th,
+.points-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.table-container {
+    margin-left: 20px;
+    width: 200px;
+}
+
+.linear-regression-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.linear-regression-container h1 {
+    text-align: center;
+    font-size: 1.8em;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.linear-regression-container h2 {
+    font-size: 1.4em;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.training-data-inputs,
+.prediction-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.training-data-input,
+.prediction-input {
+    width: calc(50% - 12px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.training-data-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.training-data-list li {
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9em;
+    color: #444;
+}
+
+.prediction-output {
+    text-align: center;
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 20px;
+}

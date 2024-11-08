@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using NeuralNetworksLab1.Contracts;
 using NeuralNetworksLab1.WebApi;
 
@@ -17,6 +18,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<Perceptron>();
+builder.Services.AddSingleton<LinearRegression>();
 
 var app = builder.Build();
 
@@ -38,10 +40,9 @@ app.Use(async (context, next) =>
     logger.LogInformation("Response: {StatusCode}", context.Response.StatusCode);
 });
 
-app.MapPost("perceptron/train", (Perceptron perceptron, TrainingPoint[] data, double learningRate) =>
+app.MapPost("perceptron/train", (Perceptron perceptron, TrainingPoint[] data) =>
 {
     perceptron.InitializeWeights();
-    perceptron.LearningRate = learningRate;
 
     var isSeparable = perceptron.TrainMultiple(data, 5000);
 
@@ -59,6 +60,23 @@ app.MapPost("perceptron/train", (Perceptron perceptron, TrainingPoint[] data, do
 .WithName("TrainPerceptron")
 .WithOpenApi();
 
+app.MapPost("perceptron/train-step", (Perceptron perceptron, TrainingPoint[] points) =>
+{
+    if (perceptron.Weights == null || perceptron.Bias == null)
+    {
+        perceptron.InitializeWeights();
+    }
+    
+    perceptron.Train(points);
+    
+    var slope = -perceptron.Weights[0] / perceptron.Weights[1];
+    var intercept = -perceptron.Bias / perceptron.Weights[1];
+
+    return Results.Ok(new { Message = "Step complete", Slope = slope, Intercept = intercept });
+})
+.WithName("TrainStepPerceptron")
+.WithOpenApi();
+
 app.MapPost("perceptron/predict", (Perceptron perceptron, Point point) =>
 {
     var prediction = perceptron.Predict(point);
@@ -66,6 +84,38 @@ app.MapPost("perceptron/predict", (Perceptron perceptron, Point point) =>
     return Results.Ok(new { Prediction = prediction });
 })
 .WithName("PredictPerceptron")
+.WithOpenApi();
+
+app.MapPost("/linear-regression/train", (LinearRegression lr, [FromBody] LinearRegressionTrainingData data) =>
+{
+    try
+    {
+        lr.Train(data.X.ToArray(), data.Y.ToArray());
+        return Results.Ok(new { Message = "Training complete", Slope = lr.Weights[0], Intercept = lr.Bias });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("TrainLinearRegression")
+.WithOpenApi();
+
+
+
+app.MapPost("/linear-regression/predict", (LinearRegression lr, [FromBody] double x) =>
+{
+    try
+    {
+        var prediction = lr.Predict(x);
+        return Results.Ok(new { Prediction = prediction });
+    }
+    catch (Exception ex)
+    {   
+        return Results.Problem(ex.Message);
+    }
+})
+.WithName("PredictLinearRegression")
 .WithOpenApi();
 
 app.Run();
